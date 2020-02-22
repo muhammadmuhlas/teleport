@@ -46,7 +46,7 @@ func BeginTeleport(migration *Migration) {
 	})
 
 	// Create Target Repository and Add Remotes
-	targetRepo := CreateBitbucketRepository(Config.GetString("target.credential.username"), migration.Name, "true", "no_public_forks")
+	targetRepo := CreateBitbucketRepository(Config.GetString("target.namespace"), migration.Name, "true", "no_public_forks")
 	for _, cloneLink := range targetRepo.Links["clone"].([]interface{}) {
 		if linkKey := cloneLink.(map[string]interface{})["name"]; linkKey == "https" {
 			linkType := cloneLink.(map[string]interface{})["href"]
