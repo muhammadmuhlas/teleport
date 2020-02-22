@@ -10,5 +10,5 @@ Installation
 -
 > go get -u github.com/muhammadmuhlas/teleport/cmd/teleport
 
-**Make sure $GOPATH/src is registered to your $PATH**, then you can `teleport` your repo.
+**Make sure $GOPATH/bin is registered to your $PATH**, then you can `teleport` your repo.
 
