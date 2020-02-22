@@ -6,9 +6,9 @@ import (
 	"os"
 )
 
-func InArray(s string, ss []interface{}) bool {
+func InArray(s string, ss []string) bool {
 	for i := 0; i < len(ss); i++ {
-		if ss[i].(string) == s {
+		if ss[i] == s {
 			return true
 		}
 	}
@@ -24,4 +24,8 @@ func Scanner(prompt string, f func(input string) bool) {
 			break
 		}
 	}
+}
+
+func BitbucketHTTPURLBuilder(username, namespace, path string) string {
+	return "https://" + username + "@bitbucket.org/" + namespace + "/" + path + ".git"
 }

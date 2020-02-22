@@ -1,0 +1,22 @@
+source:
+  blacklist_repositories:
+  - repo_a
+  - repo-b
+  branch:
+  - master
+  - staging
+  - dev
+  credential:
+    access_token: token
+    password: password
+    username: user@example.com
+  provider: gitlab
+  whitelist_namespace:
+  - team_a
+  - team_b
+target:
+  credential:
+    password: password
+    username: user@example.com
+  namespace: team
+  provider: bitbucket

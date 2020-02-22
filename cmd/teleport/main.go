@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fmt"
+	. "github.com/muhammadmuhlas/teleport/internal"
 	"github.com/spf13/viper"
 	"os"
-	"fmt"
 	"strings"
-	"github.com/muhammadmuhlas/teleport/internal"
-	"github.com/sirupsen/logrus"
+	"time"
 )
 
 func init() {
@@ -21,52 +21,44 @@ func init() {
 Teleport your repositories to another git provider
 ==================================================
 `)
+	NewConfig("teleport", "yaml")
 }
-
-func ConfigMap() {
-	viper.Set("source.provider", "gitlab")
-	viper.Set("source.credential.username", "user@example.com")
-	viper.Set("source.credential.password", "password")
-	viper.Set("source.credential.access_token", "token")
-
-	viper.Set("target.provider", "bitbucket")
-	viper.Set("target.credential.username", "user@example.com")
-	viper.Set("target.credential.password", "password")
-}
-
 func main() {
-	if !GetOrLoadConfig() { os.Exit(0) }
-	internal.Log.Println("Getting Repositories from", viper.Get("source.provider"))
-	gitlabRepo := internal.CheckGitlab(viper.Get("source.credential.access_token").(string))
-	for _, repo := range gitlabRepo {
-		if internal.InArray(repo.Namespace.Path, viper.Get("source.whitelist_namespace").([]interface{})) {
-			logrus.Println(repo.HTTPURLToRepo)
-		}
+	Log.Println("Initializing Config")
+	if !loadConfig() {
+		os.Exit(0)
 	}
-	internal.Log.Println("Found", len(gitlabRepo), "repositories!")
+
+	Log.Println("Analyzing Source...")
+	SourceReporter(Config.GetString("source.provider"))
+	TargetReporter(Config.GetString("target.provider"))
+
+	Log.Println("Initiate Teleport Sequence...")
+	t := time.Now()
+	for _, repo := range MarkToMigrate {
+		BeginTeleport(&repo)
+	}
+	Log.Printf("%d Repositories Teleported at %.2f seconds!", len(MarkToMigrate), time.Now().Sub(t).Seconds())
 }
 
-func GetOrLoadConfig() (ready bool) {
-	viper.SetConfigName("teleport")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	if err := viper.ReadInConfig(); err != nil {
+func loadConfig() (ready bool) {
+	if err := Config.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			internal.Log.Warning("Initial config not found!")
-			internal.Scanner("Generate initial config? (Y/n) ", func(input string) bool {
+			Log.Warning("Initial config not found!")
+			Scanner("Generate initial config? (Y/n) ", func(input string) bool {
 				if strings.ToLower(input) == "y" || input == "" {
 					ConfigMap()
-					viper.SafeWriteConfigAs("teleport.yaml")
-					internal.Log.Info("Initial config saved at: teleport.yaml")
-					internal.Log.Info("Comeback when teleport.yaml configured")
+					Config.SafeWriteConfigAs("teleport.yaml")
+					Log.Info("Initial config saved at: teleport.yaml")
+					Log.Info("Comeback when teleport.yaml configured")
 					return false
 				}
-				internal.Log.Error("Initial config must be generated.")
+				Log.Error("Initial config must be generated.")
 				return true
 			})
 			return false
 		} else {
-			internal.Log.Error(err)
+			Log.Error(err)
 		}
 	}
 	return true
