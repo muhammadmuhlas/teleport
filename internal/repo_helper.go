@@ -32,7 +32,7 @@ func CheckBitbucketRepository(owner, repoSlug string) bool {
 	return true
 }
 
-func CreateBitbucketRepository(owner, repoSlug, isPrivate, forkPolicy string) *bitbucket.Repository {
+func CreateOrGetBitbucketRepository(owner, repoSlug, isPrivate, forkPolicy string) *bitbucket.Repository {
 	bbCon := bitbucket.NewBasicAuth(Config.GetString("target.credential.username"), Config.GetString("target.credential.password"))
 	opt := &bitbucket.RepositoryOptions{
 		Owner:      owner,
@@ -43,7 +43,12 @@ func CreateBitbucketRepository(owner, repoSlug, isPrivate, forkPolicy string) *b
 
 	r, err := bbCon.Repositories.Repository.Create(opt)
 	if err != nil {
-		Log.Panic(err)
+		r, err = bbCon.Repositories.Repository.Get(opt)
+		if err != nil {
+			Log.Panic(err)
+			return r
+		}
+		return r
 	}
 	return r
 }

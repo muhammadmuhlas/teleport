@@ -19,9 +19,11 @@ func ConfigMap() {
 	viper.Set("source.whitelist_namespace", []string{"team_a", "team_b"})
 	viper.Set("source.blacklist_repositories", []string{"repo_a", "repo-b"})
 	viper.Set("source.branch", []string{"master", "staging", "dev"})
+	viper.Set("source.reuse_tmp", true)
 
 	viper.Set("target.provider", "bitbucket")
 	viper.Set("target.namespace", "team")
 	viper.Set("target.credential.username", "user@example.com")
 	viper.Set("target.credential.password", "password")
+	viper.Set("target.allow_update", true)
 }

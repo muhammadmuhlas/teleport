@@ -39,10 +39,13 @@ func TargetReporter(target string) {
 		for _, repo := range SourceBag.(payload.GitlabRepositories) {
 			bbUrl := BitbucketHTTPURLBuilder(Config.GetString("target.credential.username"), Config.GetString("target.namespace"), repo.Path)
 			if CheckBitbucketRepository(Config.GetString("target.namespace"), repo.Path) {
-				Log.Warning("Skipping ", repo.Path, " (target already have this repository)")
-				continue
+				if !Config.GetBool("target.allow_update") {
+					Log.Warning("Skipping ", repo.Path, " (target already have this repository)")
+					continue
+				}
+				Log.Warning("Marking for update: ", repo.Path)
 			}
-			Log.Info("Teleport Available, ", repo.HTTPURLToRepo, " => ", bbUrl)
+			Log.Info("Teleport available: ", repo.HTTPURLToRepo, " => ", bbUrl)
 			if !InArray(repo.Path, Config.GetStringSlice("source.blacklist_repositories")) {
 				MarkToMigrate = append(MarkToMigrate, Migration{
 					Name:      repo.Path,
