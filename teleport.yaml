@@ -11,10 +11,12 @@ source:
     password: password
     username: user@example.com
   provider: gitlab
+  reuse_tmp: true
   whitelist_namespace:
   - team_a
   - team_b
 target:
+  allow_update: true
   credential:
     password: password
     username: user@example.com
