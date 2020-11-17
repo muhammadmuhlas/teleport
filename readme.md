@@ -14,7 +14,5 @@ Installation
 
 **Make sure $GOPATH/bin is registered to your $PATH**, then you can `teleport` your repo.
 
-
-
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmuhammadmuhlas%2Fteleport.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmuhammadmuhlas%2Fteleport?ref=badge_large)
